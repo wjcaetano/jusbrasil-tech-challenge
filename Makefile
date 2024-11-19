@@ -2,9 +2,9 @@
 all: help
 
 help:
-	@echo "<project-name> Makefile commands"
+	@echo "Jusbrasil Tech Chalenge Makefile commands"
 	@echo ""
-	@echo "build                 Executes the build of all images required to run <project-name> API"
+	@echo "build                 Executes the build of all images required to run Jusbrasil Tech Chalenge"
 	@echo "down                  Stops all docker containers"
 	@echo "run                   Start all containers and keep attached"
 	@echo "run_local             Run application in the current terminal"

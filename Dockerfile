@@ -1,6 +1,6 @@
 FROM golang:alpine3.19
 
-ENV APPLICATION_PACKAGE=./cmd/go-scaffolding
+ENV APPLICATION_PACKAGE=./cmd/jusbrasil-tech-challenge
 ENV APP_PATH=/app
 ENV GO_TEST_FLAGS="-tags=integration -p=1"
 ENV SCOPE=local
@@ -9,10 +9,10 @@ RUN apk update && apk add --no-cache bash
 
 RUN apk add nodejs npm
 
-RUN	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/v1.56.2/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
+RUN	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/v1.62.0/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.62.0
 
 RUN go install github.com/arthurgustin/godepth@latest
-RUN go install github.com/fdaines/arch-go@v1.4.0
+RUN go install github.com/arch-go/arch-go@latest
 RUN npm -g install directory-validator
 
 ADD ./commands/*.sh /commands/
