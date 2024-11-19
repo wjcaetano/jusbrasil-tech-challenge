@@ -1,4 +1,4 @@
-# Contributing to go-scaffolding
+# Contributing to jusbrasil-tech-challenge
 
 ## How to contribute
 
