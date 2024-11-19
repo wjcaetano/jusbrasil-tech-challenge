@@ -1,5 +1,6 @@
 .PHONY: build run test
 all: help
+SHELL := /bin/bash
 
 help:
 	@echo "Jusbrasil Tech Chalenge Makefile commands"
