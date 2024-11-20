@@ -33,6 +33,7 @@ linters-settings:
           - github.com/magiconair/properties
           - github.com/stretchr/testify/suite
           - github.com/h2non/gock
+          - bou.ke/monkey
   dupl:
     # tokens count to trigger issue, 150 by default
     threshold: 150
