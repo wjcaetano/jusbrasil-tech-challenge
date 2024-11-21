@@ -1,17 +1,16 @@
-version: "3.8"
 services:
   jusbrasil-tech-challenge:
     build:
       context: .
       dockerfile: Dockerfile
     command: [ "./commands/run_local.sh" ]
-    container_name: access-manager
+    container_name: jusbrasil-tech-challenge
     depends_on:
       testlocal:
         condition: service_healthy
     env_file: resources/config/local.properties
     ports:
-      - "8080:8080"
+      - "8000:8000"
     restart: always
     volumes:
       - .:/app
@@ -24,10 +23,14 @@ services:
     env_file: resources/config/local.properties
     image: mysql:8.0.31
     restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: testlocal
     ports:
       - "3306:3306"
     volumes:
-      - ./commands/init-mysql:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
     networks:
       - app-network
