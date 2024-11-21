@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/magiconair/properties"
 )
@@ -18,6 +19,13 @@ const (
 )
 
 type (
+	HTTPClient struct {
+		MaxOpenConns    int           `properties:"max_open_conns,default=10"`
+		MaxIdleConns    int           `properties:"max_idle_conns,default=10"`
+		ConnMaxLifetime time.Duration `properties:"conn_max_lifetime,default=10m"`
+		Addr            string        `properties:"addr,default=:8080"`
+	}
+
 	Database struct {
 		Cluster  string `properties:"cluster"`
 		Name     string `properties:"name"`
@@ -26,9 +34,10 @@ type (
 	}
 
 	Configuration struct {
-		AppPath  string   `properties:"app_path,default="`
-		Scope    string   `properties:"scope,default="`
-		Database Database `properties:"database"`
+		AppPath    string     `properties:"app_path,default="`
+		Scope      string     `properties:"scope,default="`
+		Database   Database   `properties:"database"`
+		HTTPClient HTTPClient `properties:"http_client"`
 	}
 )
 
@@ -54,7 +63,11 @@ func loadProperties() (*properties.Properties, error) {
 	}
 
 	if getEnv(scopeEnv, "SCOPE") == localScope {
-		return loadLocalProperties(), nil
+		prop, err := loadLocalProperties()
+		if err != nil {
+			return nil, err
+		}
+		return prop, nil
 	}
 
 	return loadServiceProperties()
@@ -83,18 +96,21 @@ func getEnv(key, defaultValue string) string {
 	return defaultValue
 }
 
-func loadLocalProperties() *properties.Properties {
+func loadLocalProperties() (*properties.Properties, error) {
 	appPath, err := getProjectPath()
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("unable to get project path: %w", err)
 	}
+
+	appPath = filepath.Dir(filepath.Dir(appPath))
+
 	configFile := filepath.Join(appPath, localConfigScope)
 
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		return nil
+		return nil, fmt.Errorf("unable to find configuration file %s", configFile)
 	}
 
-	return properties.MustLoadFile(configFile, properties.UTF8)
+	return properties.MustLoadFile(configFile, properties.UTF8), nil
 }
 
 func loadServiceProperties() (*properties.Properties, error) {
@@ -107,6 +123,8 @@ func loadServiceProperties() (*properties.Properties, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not get project path: %w", err)
 	}
+
+	appPath = filepath.Dir(filepath.Dir(appPath))
 
 	configFile := filepath.Join(appPath, inputConfig)
 
@@ -124,6 +142,7 @@ func decodeConfig(prop *properties.Properties) (*Configuration, error) {
 	if err := prop.Decode(&cfg); err != nil {
 		return nil, err
 	}
+
 	return &cfg, nil
 }
 
@@ -136,8 +155,6 @@ func getProjectPath() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("could not get working directory: %w", err)
 	}
-
-	workingDir = filepath.Dir(filepath.Dir(workingDir))
 
 	return workingDir, nil
 }

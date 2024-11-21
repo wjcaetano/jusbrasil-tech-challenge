@@ -5,6 +5,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/magiconair/properties"
 	"github.com/stretchr/testify/assert"
@@ -22,8 +23,9 @@ func Test_DecodeConfig(t *testing.T) {
 
 	t.Run("should return success when decode config", func(t *testing.T) {
 		expectedResult := &Configuration{
-			Scope:    "local",
-			Database: buildDatabase(),
+			Scope:      "local",
+			Database:   buildDatabase(),
+			HTTPClient: buildHTTPClient(),
 		}
 
 		result, err := decodeConfig(prop)
@@ -134,6 +136,7 @@ func TestNewConfig(t *testing.T) {
 				Username: "root",
 				Password: "root",
 			},
+			HTTPClient: buildHTTPClient(),
 		}
 
 		result, err := NewConfig()
@@ -149,6 +152,15 @@ func buildDatabase() Database {
 		Name:     "testlocal",
 		Username: "root",
 		Password: "root",
+	}
+}
+
+func buildHTTPClient() HTTPClient {
+	return HTTPClient{
+		MaxOpenConns:    10,
+		MaxIdleConns:    10,
+		ConnMaxLifetime: 10 * time.Minute,
+		Addr:            ":8080",
 	}
 }
 
