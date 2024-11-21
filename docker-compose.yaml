@@ -1,13 +1,46 @@
-version: "2.1"
+version: "3.8"
 services:
   jusbrasil-tech-challenge:
-    build: .
-    command: ["/commands/run_local.sh"]
-    container_name: jusbrasil-tech-challenge
-    env_file: variables.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: [ "./commands/run_local.sh" ]
+    container_name: access-manager
+    depends_on:
+      testlocal:
+        condition: service_healthy
+    env_file: resources/config/local.properties
     ports:
       - "8080:8080"
     restart: always
     volumes:
       - .:/app
       - $HOME/go/pkg/mod:/go/pkg/mod
+    networks:
+      - app-network
+
+  testlocal:
+    container_name: testlocal
+    env_file: resources/config/local.properties
+    image: mysql:8.0.31
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./commands/init-mysql:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge

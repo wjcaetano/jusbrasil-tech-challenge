@@ -34,6 +34,13 @@ linters-settings:
           - github.com/stretchr/testify/suite
           - github.com/h2non/gock
           - bou.ke/monkey
+          - jusbrasil-tech-challenge/internal/config
+          - github.com/go-chi/chi/v5
+          - jusbrasil-tech-challenge/internal/routes
+          - jusbrasil-tech-challenge/internal/db
+          - jusbrasil-tech-challenge/internal/router
+          - jusbrasil-tech-challenge/internal/server
+          - jusbrasil-tech-challenge/cmd/api/modules
   dupl:
     # tokens count to trigger issue, 150 by default
     threshold: 150
