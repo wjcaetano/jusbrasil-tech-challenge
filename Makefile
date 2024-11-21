@@ -25,20 +25,20 @@ help:
 	@echo ""
 
 build:
-	@docker-compose build --no-cache --force-rm --pull
+	@docker compose build --no-cache --force-rm --pull
 
 down:
-	@docker-compose down
+	@docker compose down
 
 run: down
-	@docker-compose up --build
+	@docker compose up --build
 
 run_local:
-	@eval $$(cat resources/config/local.properties | grep -v '^#' | sed 's/^/export /') && APP_PATH=$$PWD go run cmd/api/*.go
+	@eval $$(cat resources/config/local.properties | grep -v '^#' | sed 's/^/export /' | sed 's/\./_/g') && export APP_PATH=$$PWD && export configFileName=resources/config/local.properties && export SCOPE=local && go run cmd/api/*.go
 
 fs: down
-	@docker-compose build
-	@docker-compose up -d
+	@docker compose build
+	@docker compose up -d
 
 hooks:
 	@if [ ! -d "commands/git/pre-commit" ]; then mkdir -p commands/git/pre-commit; fi
@@ -50,8 +50,8 @@ hooks:
 	@chmod -R +x .git/hooks/pre-push
 
 test:
-	@docker-compose build --force-rm <project-name>
-	@docker-compose run --rm <project-name> /commands/run_test.sh
+	@docker compose build --force-rm jusbrasil-tech-challenge
+	@docker compose run --rm <project-name> /commands/run_test.sh
 
 cleanup:
 	@find . -type d -name mocks -exec rm -rf {} \;
@@ -66,11 +66,11 @@ test_local:
 
 test_up: down
 	@make load_env
-	@docker-compose up -d
+	@docker compose up -d
 
 test_run:
 	@make load_env
-	@docker-compose exec <project-name> /commands/test.sh
+	@docker compose exec <project-name> /commands/test.sh
 
 .PHONY:
 specs_generate:
