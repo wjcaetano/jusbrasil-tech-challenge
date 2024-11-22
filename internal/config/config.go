@@ -102,8 +102,6 @@ func loadLocalProperties() (*properties.Properties, error) {
 		return nil, fmt.Errorf("unable to get project path: %w", err)
 	}
 
-	//appPath = filepath.Dir(filepath.Dir(appPath))
-
 	configFile := filepath.Join(appPath, localConfigScope)
 
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
@@ -123,8 +121,6 @@ func loadServiceProperties() (*properties.Properties, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not get project path: %w", err)
 	}
-
-	//appPath = filepath.Dir(filepath.Dir(appPath))
 
 	configFile := filepath.Join(appPath, inputConfig)
 
