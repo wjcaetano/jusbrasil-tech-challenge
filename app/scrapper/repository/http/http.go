@@ -22,9 +22,11 @@ func NewScraperRepository() *ScraperRepository {
 
 func (r *ScraperRepository) FetchPage(url string) (string, error) {
 	var result string
-	r.collector.OnHTML("body", func(e *colly.HTMLElement) {
-		result = e.Text
+	r.collector.OnResponse(func(resp *colly.Response) {
+		result = string(resp.Body)
 	})
+
+	fmt.Println(result)
 
 	err := r.collector.Visit(url)
 	if err != nil {

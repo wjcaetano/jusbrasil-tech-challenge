@@ -28,7 +28,7 @@ func TestScraperRepository_FetchPage(t *testing.T) {
 	defer server.Close()
 
 	t.Run("should return a valid content from site", func(t *testing.T) {
-		expectedContent := "Test Page Content"
+		expectedContent := "<html><body>Test Page Content</body></html>"
 
 		scraper := NewScraperRepository()
 
@@ -39,7 +39,7 @@ func TestScraperRepository_FetchPage(t *testing.T) {
 		content, err := scraper.FetchPage(server.URL)
 
 		require.NoError(t, err)
-		assert.Contains(t, content, expectedContent)
+		assert.Equal(t, expectedContent, content)
 	})
 
 	t.Run("should return an error when failing to visit url", func(t *testing.T) {
