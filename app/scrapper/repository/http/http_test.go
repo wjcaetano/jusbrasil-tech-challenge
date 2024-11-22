@@ -71,7 +71,14 @@ func Test_getUserAgent(t *testing.T) {
 		userAgentURL = server.URL
 		defer func() { userAgentURL = originalURL }()
 
-		result := getUserAgent()
+		originalAllowedURLs := allowedURLs
+		allowedURLs = map[string]struct{}{
+			server.URL: {},
+		}
+		defer func() { allowedURLs = originalAllowedURLs }()
+
+		result, err := getUserAgent()
+		require.NoError(t, err)
 
 		assert.Equal(t, expectedUserAgent, result)
 	})
