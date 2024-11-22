@@ -1,8 +1,9 @@
 package modules
 
 import (
-	"go.uber.org/fx"
 	"jusbrasil-tech-challenge/app/scrapper/repository/http"
+
+	"go.uber.org/fx"
 )
 
 var scrapperFactory = fx.Provide(

@@ -41,6 +41,8 @@ linters-settings:
           - jusbrasil-tech-challenge/internal/router
           - jusbrasil-tech-challenge/internal/server
           - jusbrasil-tech-challenge/cmd/api/modules
+          - jusbrasil-tech-challenge/app/scrapper
+          - github.com/gocolly/colly/v2
   dupl:
     # tokens count to trigger issue, 150 by default
     threshold: 150

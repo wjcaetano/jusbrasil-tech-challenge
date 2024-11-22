@@ -2,8 +2,9 @@ package http
 
 import (
 	"fmt"
-	"github.com/gocolly/colly/v2"
 	"net/http"
+
+	"github.com/gocolly/colly/v2"
 )
 
 var userAgentURL = "https://httpbin.org/user-agent"
