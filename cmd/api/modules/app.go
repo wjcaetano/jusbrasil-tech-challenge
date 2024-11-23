@@ -9,6 +9,7 @@ import (
 func NewApp() *fx.App {
 	options := []fx.Option{
 		InternalModule,
+		ScrapperModule,
 	}
 
 	if !config.IsLocalScope() {
