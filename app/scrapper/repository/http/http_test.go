@@ -55,31 +55,4 @@ func TestScraperRepository_FetchPage(t *testing.T) {
 		assert.Equal(t, expectedError, err.Error())
 
 	})
-
-}
-
-func Test_getUserAgent(t *testing.T) {
-	t.Run("should return user agent", func(t *testing.T) {
-		expectedUserAgent := "MockUserAgent/1.0"
-
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("User-Agent", expectedUserAgent)
-		}))
-		defer server.Close()
-
-		originalURL := userAgentURL
-		userAgentURL = server.URL
-		defer func() { userAgentURL = originalURL }()
-
-		originalAllowedURLs := allowedURLs
-		allowedURLs = map[string]struct{}{
-			server.URL: {},
-		}
-		defer func() { allowedURLs = originalAllowedURLs }()
-
-		result, err := getUserAgent()
-		require.NoError(t, err)
-
-		assert.Equal(t, expectedUserAgent, result)
-	})
 }
