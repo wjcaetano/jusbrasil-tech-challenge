@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/magiconair/properties"
@@ -12,7 +13,6 @@ import (
 const (
 	localConfigScope       = "resources/config/local.properties"
 	applicationConfigScope = "resources/config/application.properties"
-	localConfigFileEnv     = "variables.env"
 	scopeEnv               = "SCOPE"
 	appPathEnv             = "APP_PATH"
 	localScope             = "local"
@@ -152,5 +152,35 @@ func getProjectPath() (string, error) {
 		return "", fmt.Errorf("could not get working directory: %w", err)
 	}
 
-	return workingDir, nil
+	path := setDefaultPath(workingDir)
+
+	return path, nil
+}
+
+func setDefaultPath(workingDir string) string {
+	for {
+		if isProjectRoot(workingDir) {
+			return workingDir
+		}
+
+		parentDir := getParentDir(workingDir)
+		if parentDir == workingDir {
+			break
+		}
+		workingDir = parentDir
+	}
+	return ""
+}
+
+func isProjectRoot(dir string) bool {
+	return strings.HasSuffix(dir, "jusbrasil-tech-challenge") || fileExists(filepath.Join(dir, "go.mod"))
+}
+
+func getParentDir(dir string) string {
+	return filepath.Dir(dir)
+}
+
+func fileExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
 }
