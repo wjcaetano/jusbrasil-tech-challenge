@@ -79,6 +79,7 @@ func (s *scrapperService) extractSummary(row *goquery.Selection) string {
 		if strings.Contains(strongText, "Ementa:") {
 			selection.Find("strong").Remove()
 			summary = strings.TrimSpace(selection.Text())
+			summary = cleanText(summary)
 			return false
 		}
 		return true
@@ -220,4 +221,13 @@ func (s *scrapperService) updateFields(row *goquery.Selection, currentCase entit
 		currentCase.PublicationDate = publicationDate
 	}
 	return currentCase
+}
+
+func cleanText(text string) string {
+	text = strings.ReplaceAll(text, "\n", " ")
+	text = strings.ReplaceAll(text, "\r", " ")
+
+	text = regexp.MustCompile(`\s+`).ReplaceAllString(text, " ")
+
+	return strings.TrimSpace(text)
 }
