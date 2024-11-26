@@ -44,6 +44,7 @@ linters-settings:
           - jusbrasil-tech-challenge/app/scrapper
           - github.com/gocolly/colly/v2
           - jusbrasil-tech-challenge/tests/mock
+          - github.com/PuerkitoBio/goquery
   dupl:
     # tokens count to trigger issue, 150 by default
     threshold: 150
@@ -59,7 +60,7 @@ linters-settings:
     simplify: true
   gocognit:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 6
+    min-complexity: 7
   nestif:
     # minimal complexity of if statements to report, 5 by default
     min-complexity: 2
@@ -92,7 +93,7 @@ linters-settings:
     multi-func: false # Enforces newlines (or comments) after every multi-line function signature
   gocyclo:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 6
+    min-complexity: 8
   grouper:
     const-require-grouping: true
   revive:

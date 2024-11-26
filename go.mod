@@ -3,6 +3,7 @@ module jusbrasil-tech-challenge
 go 1.23.3
 
 require (
+	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/magiconair/properties v1.8.7
@@ -13,7 +14,6 @@ require (
 )
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.0 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/antchfx/htmlquery v1.3.3 // indirect
 	github.com/antchfx/xmlquery v1.4.2 // indirect
@@ -28,6 +28,7 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	go.uber.org/dig v1.18.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect

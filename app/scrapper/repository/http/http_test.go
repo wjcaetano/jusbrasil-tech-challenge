@@ -5,9 +5,29 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gocolly/colly/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+)
+
+const (
+	tableHTML string = `
+			<html>
+				<body>
+					<div id="divDadosResultado-A">
+						<table>
+							<tbody>
+								<tr>
+									<td>Test Row 1</td>
+								</tr>
+								<tr>
+									<td>Test Row 2</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</body>
+			</html>
+		`
 )
 
 func TestNewScraperRepository(t *testing.T) {
@@ -24,18 +44,21 @@ func TestNewScraperRepository(t *testing.T) {
 func TestScraperRepository_FetchPage(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`<html><body>Test Page Content</body></html>`))
+		_, _ = w.Write([]byte(tableHTML))
 	}))
 	defer server.Close()
 
 	t.Run("should return a valid content from site", func(t *testing.T) {
-		expectedContent := "<html><body>Test Page Content</body></html>"
+		expectedContent := `
+								<tr>
+									<td>Test Row 1</td>
+								</tr>
+								<tr>
+									<td>Test Row 2</td>
+								</tr>
+							`
 
 		scraper := NewScraperRepository()
-
-		scraper.collector.OnRequest(func(r *colly.Request) {
-			r.Headers.Set("Host", server.URL)
-		})
 
 		content, err := scraper.FetchPage(server.URL)
 
@@ -45,7 +68,7 @@ func TestScraperRepository_FetchPage(t *testing.T) {
 
 	t.Run("should return an error when failing to visit url", func(t *testing.T) {
 		invalidURL := "http://invalid-url"
-		expectedError := "failed to scrape page: Get \"http://invalid-url\": dial tcp: lookup invalid-url on 127.0.0.53:53: server misbehaving"
+		expectedError := "failed to fetch page: Get \"http://invalid-url\": dial tcp: lookup invalid-url on 127.0.0.53:53: server misbehaving"
 
 		scraper := NewScraperRepository()
 		content, err := scraper.FetchPage(invalidURL)
