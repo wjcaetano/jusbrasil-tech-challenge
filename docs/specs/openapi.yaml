@@ -1,0 +1,75 @@
+openapi: 3.0.1
+info:
+  title: JusBrasil API
+  description: API para extração de dados legais de sites jurídicos.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+
+paths:
+  /health:
+    get:
+      summary: "Verifica a saúde da API"
+      description: "Esse endpoint verifica se a API está ativa."
+      operationId: "checkHealth"
+      responses:
+        "200":
+          description: "A API está funcionando"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+        "500":
+          description: "Erro interno do servidor"
+
+  /scrapper:
+    get:
+      summary: "Scraping de casos legais"
+      description: "Este endpoint faz scraping de dados legais a partir de uma URL fornecida."
+      operationId: "scrapeCases"
+      parameters:
+        - name: "url"
+          in: "query"
+          description: "URL do site para fazer scraping."
+          required: true
+          schema:
+            type: string
+            example: "https://exemplo.com/casos-legais"
+      responses:
+        "200":
+          description: "Casos legais extraídos com sucesso."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    caseNumber:
+                      type: string
+                      example: "1234567-89.2021.8.09.0001"
+                    summary:
+                      type: string
+                      example: "Resumo do caso"
+                    reporter:
+                      type: string
+                      example: "Relator: Dr. João Silva"
+                    court:
+                      type: string
+                      example: "Comarca de Goiânia"
+                    judgementDate:
+                      type: string
+                      format: date
+                      example: "2021-09-01"
+                    publicationDate:
+                      type: string
+                      format: date
+                      example: "2021-09-15"
+        "400":
+          description: "Parâmetro 'url' não fornecido ou inválido."
+        "500":
+          description: "Erro ao processar o scraping."
