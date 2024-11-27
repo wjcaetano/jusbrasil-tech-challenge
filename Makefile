@@ -34,6 +34,8 @@ run: down
 	@docker compose up --build
 
 run_local:
+	@echo "Stopping and removing existing Swagger UI container (if any)"
+	@docker rm -f swagger-ui || true
 	@eval $$(cat resources/config/local.properties | grep -v '^#' | sed 's/^/export /' | sed 's/\./_/g') && export APP_PATH=$$PWD && export configFileName=resources/config/local.properties && export SCOPE=local && go run cmd/api/*.go
 
 fs: down
@@ -72,19 +74,28 @@ test_run:
 	@make load_env
 	@docker compose exec <project-name> /commands/test.sh
 
-.PHONY:
+.PHONY: specs_generate
 specs_generate:
-	@echo "Generating OpenAPI documentation from code comments"
-	@Swagger generate spec --scan-models --input=docs/specs/template.yaml --output=docs/specs/swagger.yaml
-	@echo "Generated swagger.yaml. You may access the docs by running the specs_serve command"
+	@echo "Generating OpenAPI documentation using Docker"
+	docker run --rm \
+		-v ${PWD}/docs/specs:/local \
+		openapitools/openapi-generator-cli generate \
+		-g html2 \
+		-i /local/openapi.yaml \
+		-o /local
 
-.PHONY:
+.PHONY: specs_serve
 specs_serve:
-	@echo "Remove docker docs api with name $(DOCKER_DOCS_API_CONTAINER)"
-	@${DOCKER_EXEC} rm -f -v ${DOCKER_DOCS_API_CONTAINER} || true
-	@echo "Running docker docs api with name $(DOCKER_DOCS_API_CONTAINER)"
-	@${DOCKER_EXEC} run -d -p ${DOCKER_DOCS_API_CONTAINER_PORT}:8080 --name ${DOCKER_DOCS_API_CONTAINER} -e SWAGGER_JSON=/api/swagger.yaml -v ${PWD}/docs/specs/:/api/ swaggerapi/swagger-ui:v3.25.4
-	@echo "Documentation Api can be viewed at http://localhost:$(DOCKER_DOCS_API_CONTAINER_PORT)"
+	@echo "Stopping and removing existing Swagger UI container (if any)"
+	@docker rm -f swagger-ui || true
+	@echo "Starting Swagger UI with OpenAPI documentation"
+	@docker run -d \
+		-p 8080:8080 \
+		--name swagger-ui \
+		-e SWAGGER_JSON=/api/openapi.yaml \
+		-v ${PWD}/docs/specs/openapi.yaml:/api/openapi.yaml \
+		swaggerapi/swagger-ui:v3.52.5
+	@echo "Swagger UI is running at http://localhost:8080"
 
 .PHONY:
 guide_serve:
