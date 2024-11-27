@@ -58,7 +58,7 @@ func TestScrapperService_GetLegalCases(t *testing.T) {
 
 func TestScrapperService_ProcessCaseRow(t *testing.T) {
 	t.Run("should append current case to list when all fields are complete and new case starts", func(t *testing.T) {
-		service := &scrapperService{}
+		service := &serviceScrapper{}
 
 		currentCase := scrapper.LegalCase{
 			CaseNumber:      "1001143-04.2021.8.26.0541",
