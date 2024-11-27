@@ -1,6 +1,7 @@
 package router
 
 import (
+	"jusbrasil-tech-challenge/app/scrapper/entrypoint/rest/scrapper"
 	"jusbrasil-tech-challenge/internal/routes"
 	"log"
 	"net/http"
@@ -8,13 +9,13 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewRouter() *chi.Mux {
+func NewRouter(scrapperHandler *scrapper.Handler) *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Use(middlewareLogger)
 	router.Use(middlewareRecoverer)
 
-	routes.RegisterRoutes(router)
+	routes.RegisterRoutes(router, scrapperHandler)
 
 	return router
 }

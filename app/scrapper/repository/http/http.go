@@ -8,17 +8,17 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-type ScraperRepository struct {
+type ScrapperRepository struct {
 	collector *colly.Collector
 }
 
-func NewScraperRepository() *ScraperRepository {
+func NewScrapperRepository() *ScrapperRepository {
 	c := colly.NewCollector()
 
-	return &ScraperRepository{collector: c}
+	return &ScrapperRepository{collector: c}
 }
 
-func (r *ScraperRepository) FetchPage(url string) (string, error) {
+func (r *ScrapperRepository) FetchPage(url string) (string, error) {
 	var content string
 
 	r.collector.OnResponse(func(r *colly.Response) {

@@ -12,24 +12,24 @@ import (
 //go:generate mockery --all --output=./mocks --outpkg=mocks --with-expecter
 
 type (
-	ScrapperRepository interface {
+	RepositoryScrapper interface {
 		FetchPage(url string) (string, error)
 	}
 
-	ScrapperService interface {
+	ServiceScrapper interface {
 		GetLegalCases(url string) ([]entity.LegalCase, error)
 	}
 
-	scrapperService struct {
-		repo ScrapperRepository
+	serviceScrapper struct {
+		repo RepositoryScrapper
 	}
 )
 
-func NewScrapperService(repo ScrapperRepository) ScrapperService {
-	return &scrapperService{repo: repo}
+func NewScrapperService(repo RepositoryScrapper) ServiceScrapper {
+	return &serviceScrapper{repo: repo}
 }
 
-func (s *scrapperService) GetLegalCases(url string) ([]entity.LegalCase, error) {
+func (s *serviceScrapper) GetLegalCases(url string) ([]entity.LegalCase, error) {
 	content, err := s.repo.FetchPage(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch page: %w", err)
@@ -43,7 +43,7 @@ func (s *scrapperService) GetLegalCases(url string) ([]entity.LegalCase, error) 
 	return s.parseLegalCases(doc), nil
 }
 
-func (s *scrapperService) parseLegalCases(doc *goquery.Document) []entity.LegalCase {
+func (s *serviceScrapper) parseLegalCases(doc *goquery.Document) []entity.LegalCase {
 	var cases []entity.LegalCase
 	var currentCase entity.LegalCase
 
@@ -55,14 +55,14 @@ func (s *scrapperService) parseLegalCases(doc *goquery.Document) []entity.LegalC
 	return cases
 }
 
-func casesExtract(doc *goquery.Document, s *scrapperService) (currentCase entity.LegalCase, cases []entity.LegalCase) {
+func casesExtract(doc *goquery.Document, s *serviceScrapper) (currentCase entity.LegalCase, cases []entity.LegalCase) {
 	doc.Find("tr").Each(func(_ int, selection *goquery.Selection) {
 		currentCase = s.processCaseRow(selection, currentCase, &cases)
 	})
 	return currentCase, cases
 }
 
-func (s *scrapperService) extractCaseNumber(row *goquery.Selection) string {
+func (s *serviceScrapper) extractCaseNumber(row *goquery.Selection) string {
 	caseNumber := strings.TrimSpace(row.Find("td a:first-of-type").Text())
 	matched, _ := regexp.MatchString(`^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$`, caseNumber)
 	if matched {
@@ -71,7 +71,7 @@ func (s *scrapperService) extractCaseNumber(row *goquery.Selection) string {
 	return ""
 }
 
-func (s *scrapperService) extractSummary(row *goquery.Selection) string {
+func (s *serviceScrapper) extractSummary(row *goquery.Selection) string {
 	var summary string
 
 	row.Find("td div").EachWithBreak(func(_ int, selection *goquery.Selection) bool {
@@ -87,7 +87,7 @@ func (s *scrapperService) extractSummary(row *goquery.Selection) string {
 	return summary
 }
 
-func (s *scrapperService) extractReporter(row *goquery.Selection) string {
+func (s *serviceScrapper) extractReporter(row *goquery.Selection) string {
 	var reporter string
 	row.Find("td").EachWithBreak(func(_ int, selection *goquery.Selection) bool {
 		strongText := strings.TrimSpace(selection.Find("strong").Text())
@@ -101,7 +101,7 @@ func (s *scrapperService) extractReporter(row *goquery.Selection) string {
 	return reporter
 }
 
-func (s *scrapperService) extractCourt(row *goquery.Selection) string {
+func (s *serviceScrapper) extractCourt(row *goquery.Selection) string {
 	var reporter string
 	row.Find("td").EachWithBreak(func(_ int, selection *goquery.Selection) bool {
 		strongText := strings.TrimSpace(selection.Find("strong").Text())
@@ -115,7 +115,7 @@ func (s *scrapperService) extractCourt(row *goquery.Selection) string {
 	return reporter
 }
 
-func (s *scrapperService) extractJudgingBody(row *goquery.Selection) string {
+func (s *serviceScrapper) extractJudgingBody(row *goquery.Selection) string {
 	var reporter string
 	row.Find("td").EachWithBreak(func(_ int, selection *goquery.Selection) bool {
 		strongText := strings.TrimSpace(selection.Find("strong").Text())
@@ -129,7 +129,7 @@ func (s *scrapperService) extractJudgingBody(row *goquery.Selection) string {
 	return reporter
 }
 
-func (s *scrapperService) extractJudgementDate(row *goquery.Selection) string {
+func (s *serviceScrapper) extractJudgementDate(row *goquery.Selection) string {
 	var reporter string
 	row.Find("td").EachWithBreak(func(_ int, selection *goquery.Selection) bool {
 		strongText := strings.TrimSpace(selection.Find("strong").Text())
@@ -143,7 +143,7 @@ func (s *scrapperService) extractJudgementDate(row *goquery.Selection) string {
 	return reporter
 }
 
-func (s *scrapperService) extractCaseClass(row *goquery.Selection) string {
+func (s *serviceScrapper) extractCaseClass(row *goquery.Selection) string {
 	var reporter string
 	row.Find("td").EachWithBreak(func(_ int, selection *goquery.Selection) bool {
 		strongText := strings.TrimSpace(selection.Find("strong").Text())
@@ -157,7 +157,7 @@ func (s *scrapperService) extractCaseClass(row *goquery.Selection) string {
 	return reporter
 }
 
-func (s *scrapperService) extractPublicationDate(row *goquery.Selection) string {
+func (s *serviceScrapper) extractPublicationDate(row *goquery.Selection) string {
 	var reporter string
 	row.Find("td").EachWithBreak(func(_ int, selection *goquery.Selection) bool {
 		strongText := strings.TrimSpace(selection.Find("strong").Text())
@@ -185,7 +185,7 @@ func isCaseFound(currentCase entity.LegalCase) bool {
 	return true
 }
 
-func (s *scrapperService) processCaseRow(r *goquery.Selection, currentCase entity.LegalCase, cases *[]entity.LegalCase) entity.LegalCase {
+func (s *serviceScrapper) processCaseRow(r *goquery.Selection, currentCase entity.LegalCase, cases *[]entity.LegalCase) entity.LegalCase {
 	caseNumber := s.extractCaseNumber(r)
 	if caseNumber != "" {
 		if isCaseFound(currentCase) {
@@ -198,7 +198,7 @@ func (s *scrapperService) processCaseRow(r *goquery.Selection, currentCase entit
 	return currentCase
 }
 
-func (s *scrapperService) updateFields(row *goquery.Selection, currentCase entity.LegalCase) entity.LegalCase {
+func (s *serviceScrapper) updateFields(row *goquery.Selection, currentCase entity.LegalCase) entity.LegalCase {
 	if summary := s.extractSummary(row); summary != "" {
 		currentCase.Summary = summary
 	}

@@ -2,7 +2,6 @@ package scrapperprocess
 
 import (
 	"jusbrasil-tech-challenge/app/scrapper"
-	service "jusbrasil-tech-challenge/app/scrapper/service/scrapper"
 )
 
 //go:generate mockery --all --output=./mocks --outpkg=mocks --with-expecter
@@ -13,11 +12,11 @@ type (
 	}
 
 	processScrapper struct {
-		service service.ScrapperService
+		service ServiceScrapper
 	}
 )
 
-func NewProcessScrapper(service service.ScrapperService) ProcessScrapper {
+func NewProcessScrapper(service ServiceScrapper) ProcessScrapper {
 	return &processScrapper{service: service}
 }
 
