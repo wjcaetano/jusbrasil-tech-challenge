@@ -14,7 +14,7 @@ Goland won't need any further plugins to execute the APP, if you manually set en
 3. In `Environment` variables, add the following:
 ```
 ## $PWD is the project root folder
-APP_PATH=$PWD;configFileName=configFileName=resources/config/local.properties
+APP_PATH=$PWD;configFileName=configFileName=resources/config/local.properties;SCOPE=local
 ```
 4. Click on `EnvFile` tab and add select `+` to add new envfile
 5. Choose `variables.env` on project root folder
